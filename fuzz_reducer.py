@@ -4,7 +4,7 @@
 @author: hduser
 """
 import sys
-n_args = 3
+n_args = 2
 n_id   = 6
 # only filtering output
 for line in sys.stdin:

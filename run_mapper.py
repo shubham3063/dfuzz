@@ -59,7 +59,7 @@ class Command(object):
         return self.process.returncode
 
 
-n_args = 3
+n_args = 2
 n_id = 6
 # begin reading standard input line by line
 # each input is in the format : [file id, input]
