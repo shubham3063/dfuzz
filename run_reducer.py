@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
-Created on Thu Dec  3 15:36:40 2015
-
 @author: hduser
 """
 
@@ -18,9 +16,9 @@ for line in sys.stdin:
     prog_id, exit_code = line.split('\t')   
     
     if prev and prog_id != prev:
-        print "%s" % prev
+#        print "%s" % prev
         for ec in exit_codes:        
-            print "\t%s" % (ec)
+            print "%s\t%s" % (prev,ec)
         exit_codes = []
         
     exit_code = int(exit_code)
@@ -29,6 +27,9 @@ for line in sys.stdin:
 
     prev = prog_id
 
-print prog_id
+#print prog_id
 for ec in exit_codes:
-    print "\t%s" % ec
+    print "%s\t%s" % (prog_id,ec)
+
+
+

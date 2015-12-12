@@ -2,8 +2,6 @@
 
 # -*- coding: utf-8 -*-
 """
-Created on Sun Nov 15 13:07:36 2015
-
 @author: hduser
 """
 # import system and subprocess module from standard python library
@@ -36,7 +34,7 @@ class Command(object):
 
     def run(self, timeout):
         def target():
-            print 'Thread started'
+#            print 'Thread started'
             # run the executable on the input and catch the output
             execstdoutput = open('/tmp/exectmpstdout.txt','wb')
             execstderror = open('/tmp/exectmpstderr.txt','wb')    
@@ -47,20 +45,22 @@ class Command(object):
             execstdoutput.close()
             execstderror.close()            
             
-            print 'Thread finished'
+#            print 'Thread finished'
 
         thread = threading.Thread(target=target)
         thread.start()
         
         thread.join(timeout)
         if thread.is_alive():
-            print 'Terminating process'
+#            print 'Terminating process'
             self.process.terminate()
             thread.join()
-        print self.process.returncode
+#        print self.process.returncode
         return self.process.returncode
 
 
+n_args = 3
+n_id = 6
 # begin reading standard input line by line
 # each input is in the format : [file id, input]
 for line in sys.stdin:
@@ -72,22 +72,23 @@ for line in sys.stdin:
     linesplit = line.split('\t')
 
     # malformed line 
-    if len(linesplit) != 2 or len(linesplit[0]) != 6:
+    if len(linesplit) != n_args or len(linesplit[0]) != n_id:
         continue
         
     
     # set program id
     prog_id = linesplit[0]
-    print prog_id
-    print list_file_ids
+#    print prog_id
+#    print list_file_ids
 
     # set the input split
+#    inp_id = linesplit[1]
     inp = linesplit[1]
     
     # convert the double escaped newlines (\\n) to newline character (\n)
     inp = inp.replace('\\n','\n')    
     
-    print inp
+#    print inp
 
     # write the reconstructed input to the temp input file in the /tmp directory
     with open(inpfile,'wb') as finp:
@@ -98,18 +99,19 @@ for line in sys.stdin:
     # prog = ''.join(linesplit[1:])
 
     # first check if the program is available in the temp location
-    if prog_id in list_file_ids:
-        print "Fetching from local"
-#        with open('/tmp/progs/' + prog_id + '.c','rb') as fprog:
-#            prog = fprog.readlines()
+#    if prog_id in list_file_ids:
+#        print "Fetching from local"
 
     # if program is not available in the list, then get it from mongodb client
     if prog_id not in list_file_ids:
-        print "Fetching from Mongo"
+#        print "Fetching from Mongo"
         client = MongoClient()
         db = client.mydb
         programs = db.programs
-        prog = programs.find_one({'_id':prog_id})['code']
+        try:
+            prog = programs.find_one({'_id':prog_id})['code']
+        except:
+            continue
 
         # convert the double escaped custom newlines specifier in program (\\N)
         # to valid newlines in the program
@@ -153,7 +155,8 @@ for line in sys.stdin:
 
 #        execstatus = subprocess.call('/tmp/a.out < /tmp/tmpinput.txt > /tmp/tmpoutput.txt',stdout=execstdoutput,stderr=execstderror,shell=True)
         exec_command = Command("/tmp/a.out < /tmp/tmpinput.txt > /tmp/tmpoutput.txt")
-        execstatus = exec_command.run(timeout=2)
+        execstatus = exec_command.run(timeout=1)
+#        print "{0}\t{1}\t{2}".format(prog_id, inp_id,execstatus)
         print "{0}\t{1}".format(prog_id, execstatus)
 
 #        execstdoutput.close()

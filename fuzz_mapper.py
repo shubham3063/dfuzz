@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
-Created on Sun Dec  6 08:02:30 2015
-
 @author: hduser
 """
 import sys
@@ -35,8 +33,9 @@ for line in sys.stdin:
     # generate multiple inputs for each file id using a mutation fuzzer zzuf
     # Parameters
     seed = random.randint(1,100000)
-    n_inputs = 10
-    while n_inputs > 0:
+    n_inputs = 5
+    i = 1
+    while i <= n_inputs:
         f = open(mut_file,'wb')
         fuzz_args = fuzzer + seed_flag + str(seed) + ratio_flag + cat_util + seed_file + ' > ' + mut_file
         fuzz_status = subprocess.call(fuzz_args,shell=True)
@@ -45,11 +44,15 @@ for line in sys.stdin:
                 mut_inp = fmutinp.readlines()
                 mut_inp_striped = '\\n'.join([line.strip() for line in mut_inp])
                 list_mut_inp.append(mut_inp_striped)
-#                sys.stdout.write(b"{0}\t{1}\n".format(prog_id,mut_inp_striped))
-#                print u"%s\t%s" % (prog_id,mut_inp_striped)
+#                sys.stdout.write(b"{0}\t{1}\t{2}\n".format(prog_id,i,mut_inp_striped))
+                sys.stdout.write(b"{0}\t{1}\n".format(prog_id,mut_inp_striped))
         
-        n_inputs -= 1
+        i += 1
+        
+        # update seed value
         seed += 1
-    for m_inp in list_mut_inp:
-        sys.stdout.write(b"{0}\t{1}\n".format(prog_id,m_inp))
+    
+#    # print all the testcases in the output       
+#    for m_inp in list_mut_inp:
+#        sys.stdout.write(b"{0}\t{1}\n".format(prog_id,m_inp))
     list_mut_inp = []
